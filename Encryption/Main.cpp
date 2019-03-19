@@ -1,35 +1,83 @@
 ﻿#include<iostream>
 #include<string>
 
+using namespace std;
+
 #define ull unsigned long long 
 
-std::string decToBin(ull dec) {
+string XOR(string, string);
+string BCH(string);
+string decToBin(ull);
+string strToBin(string, bool, bool);
+
+
+
+// a1 and a2 should be binary
+string XOR(string a1, string a2)
+{
+	int size = a1.size() < a2.size() ? a1.size() : a2.size();
+	string res = "";
+
+	for (size_t i = 1; i <= size; i++)
+	{
+		char next = (a1[a1.size() - i] - '0' + a2[a2.size() - i] - '0' == 1) ? '1' : '0';
+		res = next + res;
+	}
+
+	// TODO: Substring the fron excess part of the 
+	//		 larger string to the front of res string
+
+	return res;
+}
+
+// Binary Coded Hexadecimal
+string BCH(string hexadec) { // TODO: Must convert all chars toUpperCase
+	string res = "";
+
+	for (size_t i = 0; i < hexadec.size(); i++)
+	{
+		string charBin = decToBin((hexadec[i] > '9') ? hexadec[i] - 'A' + 10 : hexadec[i] - '0');
+
+		int initialPadding = 4 - charBin.size();
+
+		while (initialPadding--)
+		{
+			charBin = "0" + charBin;
+		}
+
+		res += charBin;
+	}
+
+	return res;
+}
+
+string decToBin(ull dec) {
 	int bin;
 
-	std::string charBin = "";
+	string charBin = "";
 
 	while (dec > 0)
 	{
 		bin = dec % 2;
-		charBin = std::to_string(bin) + charBin;
+		charBin = to_string(bin) + charBin;
 		dec /= 2;
 	}
 
 	return charBin;
 }
 
-std::string strToBin(std::string message, bool isSpaced, bool isInitialPadding) {
-	std::string res = "";
+string strToBin(string message, bool isSpaced, bool withInitialPadding) {
+	string res = "";
 
 	for (size_t i = 0; i < message.size(); i++)
 	{
 		ull decMessage = (ull)message[i];
 
-		std::string charBin = decToBin(decMessage);
+		string charBin = decToBin(decMessage);
 
 		int initialPadding = 8 - charBin.size();
 
-		while (initialPadding-- && isInitialPadding)
+		while (initialPadding-- && withInitialPadding)
 		{
 			charBin = "0" + charBin;
 		}
@@ -42,12 +90,15 @@ std::string strToBin(std::string message, bool isSpaced, bool isInitialPadding) 
 }
 
 int main() {
-	std::string message = "133457799BBCDFF1"; //This is an incredibly confidential message!
-	std::cout << "Plain text (original message): " << message << std::endl;
-	//std::cout << strToBin(message, true, true) << std::endl;
-	
-	std::cout << decToBin(1383827165325090800) << std::endl;
+	//string message = "133457799BBCDFF1"; //This is an incredibly confidential message!
 
+	//cout << "Plain text (original message): " << message << endl;
+
+	//std::cout << strToBin(message, true, true) << std::endl;
+
+	//cout << (int)'A' << endl;
+
+	cout << XOR("1101001", "1001101") << endl;
 
 	system("pause");
 
