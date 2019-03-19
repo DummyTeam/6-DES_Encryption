@@ -98,7 +98,7 @@ int main() {
 
 	//cout << (int)'A' << endl;
 
-	cout << XOR("1101001", "1001101") << endl;
+	cout << BCH("133457799BBCDFF1") << endl;
 
 	system("pause");
 
