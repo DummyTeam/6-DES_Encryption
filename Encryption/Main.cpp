@@ -33,7 +33,7 @@ string OR(string a1, string a2)
 		next = (larger[larger.size() - i] - '0' + smaller[smaller.size() - i] - '0' >= 1) ? '1' : '0';
 		res = next + res;
 	}
-	
+
 	return res;
 }
 
@@ -222,7 +222,7 @@ string runThroughSBoxes(string input48) {
 		int column = binToDec(SInput.substr(1, 4));
 
 		res += OR(decToBin(S[i][row][column]), "0000");
-		
+
 	}
 
 	return res;
@@ -260,9 +260,6 @@ string f(string input, string key) {
 }
 
 int main() {
-
-
-//	system("pause");
 
 	// Initialized message and key values
 	string message = toUpper("0123456789ABCDEF");	 // In HEX. Pass through toUpper to make sure all in caps
@@ -338,23 +335,38 @@ int main() {
 	string permutatedMes = runThroughTable(binMessage, ip, 64);
 
 	// Initialized arrays L(left) and R(right) part of the coded message
-	string L[17];
-	string R[17];
+	string L[18];
+	string R[18];
 
 	// Splited the message into left and right halves, where each half has 32 bits.
 	L[0] = permutatedMes.substr(0, 32);
 	R[0] = permutatedMes.substr(32, 32);
 
 	// Calculated all other 16 L and R parts
-	for (size_t i = 1; i < 17; i++)
+	for (int i = 1; i < 17; i++)
 	{
 		//Ln = Rn-1 
 		L[i] = R[i - 1];
 
 		// Rn = Ln-1 + f(Rn-1,Kn)
-		R[i] = XOR(L[i - 1], f(R[i - 1], K[i]));
+		R[i] = XOR(L[i - 1], f(R[i - 1], K[i-1]));
 	}
 
+	// Initialized final permutation IP-1
+	int IP_Minus1[] = { 40,   8,   48,   16,   56,   24,   64,   32,
+					   39,   7,   47,   15,   55,   23,   63,   31,
+					   38,   6,   46,   14,   54,   22,   62,   30,
+					   37,   5,   45,   13,   53,   21,   61,   29,
+					   36,   4,   44,   12,   52,   20,   60,   28,
+					   35,   3,   43,   11,   51,   19,   59,   27,
+					   34,   2,   42,   10,   50,   18,   58,   26,
+					   33,   1,   41,    9,   49,   17,   57,   25 };
+
+	string concatenatedResult = R[16] + L[16];
+
+	string encryptedMessage = runThroughTable(concatenatedResult, IP_Minus1, 64);
+
+	cout << encryptedMessage << endl;
 
 	cout << endl;
 
