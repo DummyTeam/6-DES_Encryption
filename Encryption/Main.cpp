@@ -1,6 +1,7 @@
 ﻿#include<iostream>
 #include<string>
 #include<cmath>
+#include <sstream>
 
 using namespace std;
 
@@ -9,8 +10,7 @@ using namespace std;
 string XOR(string, string);
 string BCH(string);
 string decToBin(ull);
-string strToBin(string, bool, bool);
-
+string strToBin(string);
 
 // A1 and B2 should be in binary
 string OR(string a1, string a2)
@@ -55,7 +55,7 @@ string XOR(string a1, string a2)
 	return res;
 }
 
-// Binary Coded Hexadecimal
+// Binary Coded Hexadecimal - returns binary of hex number
 string BCH(string hexadec) { // TODO: Must convert all chars toUpperCase
 	string res = "";
 
@@ -102,7 +102,7 @@ string toUpper(string str) {
 	return str;
 }
 
-string strToBin(string message, bool isSpaced, bool withInitialPadding) {
+string strToBin(string message) {
 	string res = "";
 
 	for (size_t i = 0; i < message.size(); i++)
@@ -113,13 +113,12 @@ string strToBin(string message, bool isSpaced, bool withInitialPadding) {
 
 		int initialPadding = 8 - charBin.size();
 
-		while (initialPadding-- && withInitialPadding)
+		while (initialPadding--)
 		{
 			charBin = "0" + charBin;
 		}
 
 		res += charBin;
-		res += (message.size() - 1 == i || !isSpaced) ? "" : " ";
 	}
 
 	return res;
@@ -157,7 +156,6 @@ string shiftLeft(string input, int shiftValue) {
 
 	return res;
 }
-
 
 string runThroughSBoxes(string input48) {
 
@@ -259,17 +257,36 @@ string f(string input, string key) {
 
 }
 
-int main() {
+string binToHex(string bin) {
+	string res = "";
+	for (size_t i = 0; i < bin.size() / 4; i++)
+	{
+		int decNum = binToDec(bin.substr(i * 4, 4));
+		string hexNum = (decNum < 10) ? to_string(decNum) : string(1, decNum - 10 + 'A');
+		res += hexNum;
+	}
 
-	// Initialized message and key values
-	string message = toUpper("0123456789ABCDEF");	 // In HEX. Pass through toUpper to make sure all in caps
-	string key = toUpper("133457799BBCDFF1");	 // In HEX. Pass through toUpper to make sure all in caps
+	return res;
+}
 
-	// Converted HEX values to binary values
-	string binMessage = BCH(message);
-	string binKey = BCH(key);
+string stringToHex(string str) {
+	string bin = strToBin(str);
+	string hex = binToHex(bin);
+	return hex;
+}
 
-	// TODO: if message is larger than 64bit divide them into 64bit parts
+string formatMessage(string input) {
+	string carriageReturn = "0D";
+	string lineFeed = "0A";
+
+	string totalMessage = stringToHex(input) + carriageReturn + lineFeed;
+	totalMessage += string((16 - totalMessage.size() % 16), '0');
+	return totalMessage;
+}
+
+string DES(string mesBlock64, string keyBlock64) {
+	string binMessage = mesBlock64;
+	string binKey = keyBlock64;
 
 	/// Key generation
 	// Initialized PC-1 and PC-2 table
@@ -349,7 +366,7 @@ int main() {
 		L[i] = R[i - 1];
 
 		// Rn = Ln-1 + f(Rn-1,Kn)
-		R[i] = XOR(L[i - 1], f(R[i - 1], K[i-1]));
+		R[i] = XOR(L[i - 1], f(R[i - 1], K[i - 1]));
 	}
 
 	// Initialized final permutation IP-1
@@ -364,9 +381,131 @@ int main() {
 
 	string concatenatedResult = R[16] + L[16];
 
-	string encryptedMessage = runThroughTable(concatenatedResult, IP_Minus1, 64);
+	return runThroughTable(concatenatedResult, IP_Minus1, 64);
+}
 
-	cout << encryptedMessage << endl;
+string decrypt(string chipperBlock64, string keyBlock64) {
+	string binMessage = chipperBlock64;
+	string binKey = keyBlock64;
+
+	/// Key generation
+	// Initialized PC-1 and PC-2 table
+	int pc1[] = { 57, 49, 41, 33, 25, 17,  9,
+				   1, 58, 50, 42, 34, 26, 18,
+				  10,  2, 59, 51, 43, 35, 27,
+				  19, 11,  3, 60, 52, 44, 36,
+				  63, 55, 47, 39, 31, 23, 15,
+				   7, 62, 54, 46, 38, 30, 22,
+				  14,  6, 61, 53, 45, 37, 29,
+				  21, 13,  5, 28, 20, 12,  4 };
+
+	int pc2[] = { 14, 17, 11, 24, 1,   5,
+				  3, 28, 15,  6,  21, 10,
+				 23, 19, 12,  4,  26,  8,
+				 16,  7, 27, 20,  13,  2,
+				 41, 52, 31, 37,  47, 55,
+				 30, 40, 51, 45,  33, 48,
+				 44, 49, 39, 56,  34, 53,
+				 46, 42, 50, 36,  29, 32 };
+
+
+	// Run the binary key through PC-1 table to get permuted 56bit key
+	string permutedKey56 = runThroughTable(binKey, pc1, 56);
+
+	// Initialized arrays for C and D parts of the round keys
+	string C[17];
+	string D[17];
+
+	// Initialized array of final subkeys
+	string K[16];
+
+	// Splited the key into left and right halves, where each half has 28 bits.
+	C[0] = permutedKey56.substr(0, 28);
+	D[0] = permutedKey56.substr(28, 28);
+
+	// Initialized left-shift table
+	int leftShifts[] = { 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1 };
+
+	// Shifting the C and D parts to left to get other subkeys
+	for (size_t i = 1; i < 17; i++)
+	{
+		C[i] = shiftLeft(C[i - 1], leftShifts[i - 1]);
+		D[i] = shiftLeft(D[i - 1], leftShifts[i - 1]);
+
+		// Run the concatenated C and D parts through PC-2 table to get final subkeys
+		K[i - 1] = runThroughTable(C[i] + D[i], pc2, 48);
+	}
+
+
+	/// Encode each 64-bit block of data.
+	// Initialized initial permutation table
+	int ip[] = { 58, 50, 42, 34, 26, 18, 10, 2,
+				 60, 52, 44, 36, 28, 20, 12, 4,
+				 62, 54, 46, 38, 30, 22, 14, 6,
+				 64, 56, 48, 40, 32, 24, 16, 8,
+				 57, 49, 41, 33, 25, 17,  9, 1,
+				 59, 51, 43, 35, 27, 19, 11, 3,
+				 61, 53, 45, 37, 29, 21, 13, 5,
+				 63, 55, 47, 39, 31, 23, 15, 7 };
+
+	// Run the binary message through initial permutation table
+	string permutatedMes = runThroughTable(binMessage, ip, 64);
+
+	// Initialized arrays L(left) and R(right) part of the coded message
+	string L[18];
+	string R[18];
+
+	// Splited the message into left and right halves, where each half has 32 bits.
+	L[0] = permutatedMes.substr(0, 32);
+	R[0] = permutatedMes.substr(32, 32);
+
+	// Calculated all other 16 L and R parts
+	for (int i = 1; i < 17; i++)
+	{
+		//Ln = Rn-1 
+		L[i] = R[i - 1];
+
+		// Rn = Ln-1 + f(Rn-1,Kn)
+		R[i] = XOR(L[i - 1], f(R[i - 1], K[15 - (i - 1)]));
+	}
+
+	// Initialized final permutation IP-1
+	int IP_Minus1[] = { 40,   8,   48,   16,   56,   24,   64,   32,
+					   39,   7,   47,   15,   55,   23,   63,   31,
+					   38,   6,   46,   14,   54,   22,   62,   30,
+					   37,   5,   45,   13,   53,   21,   61,   29,
+					   36,   4,   44,   12,   52,   20,   60,   28,
+					   35,   3,   43,   11,   51,   19,   59,   27,
+					   34,   2,   42,   10,   50,   18,   58,   26,
+					   33,   1,   41,    9,   49,   17,   57,   25 };
+
+	string concatenatedResult = R[16] + L[16];
+
+	return runThroughTable(concatenatedResult, IP_Minus1, 64);
+}
+
+int main() {
+	string message = "Your lips are smoother than vaseline";
+	string key = "FourChar";
+
+	// Initialized message and key values
+	string messageHex = toUpper(formatMessage(message));	 // In HEX. Pass through toUpper to make sure all in caps
+	string keyHex = toUpper(stringToHex(message));			 // In HEX. Pass through toUpper to make sure all in caps
+
+	// Converted HEX values to binary values
+	string binMessage = BCH(messageHex);
+	string binKey = BCH(keyHex);
+
+	string encryptedMessageBin = "";
+
+	for (int i = 0; i < binMessage.size() / 64; i++)
+	{
+		encryptedMessageBin += decrypt(binMessage.substr(i * 64, 64), binKey);
+	}
+
+	string encryptedMessageHex = binToHex(encryptedMessageBin);
+
+	cout << "Encrypted message: \t" << encryptedMessageHex << endl;
 
 	cout << endl;
 
