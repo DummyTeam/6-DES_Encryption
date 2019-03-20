@@ -1,5 +1,6 @@
 ﻿#include<iostream>
 #include<string>
+#include<cmath>
 
 using namespace std;
 
@@ -9,6 +10,32 @@ string XOR(string, string);
 string BCH(string);
 string decToBin(ull);
 string strToBin(string, bool, bool);
+
+
+// A1 and B2 should be in binary
+string OR(string a1, string a2)
+{
+	string larger = a1.size() >= a2.size() ? a1 : a2;
+	string smaller = a1.size() < a2.size() ? a1 : a2;
+
+
+	string res = "";
+
+	for (int i = 1; i <= larger.size(); i++)
+	{
+		char next = '0';
+		if (i > smaller.size())
+		{
+			next = (larger[larger.size() - i] - '0' >= 1) ? '1' : '0';
+			res = next + res;
+			continue;
+		}
+		next = (larger[larger.size() - i] - '0' + smaller[smaller.size() - i] - '0' >= 1) ? '1' : '0';
+		res = next + res;
+	}
+	
+	return res;
+}
 
 // A1 and B2 should be in binary
 string XOR(string a1, string a2)
@@ -98,6 +125,16 @@ string strToBin(string message, bool isSpaced, bool withInitialPadding) {
 	return res;
 }
 
+int binToDec(string input) {
+	int dec = 0;
+	for (int i = input.size() - 1, j = 0; i >= 0; i--, j++)
+	{
+		dec += (input[i] - '0') * pow(2, j);
+	}
+
+	return dec;
+}
+
 string runThroughTable(string input, int arr[], int size) {
 	string res = "";
 
@@ -168,15 +205,27 @@ string runThroughSBoxes(string input48) {
 			{  6, 11,  13,  8,   1,  4,  10,  7,   9,  5,   0, 15,  14,  2,   3, 12 }
 		},
 		{
-			{ 13,  2,   8,  4,   6, 15,  11,  1,  10,  9,   3, 14,   5,  0,  12, 7 },
+			{ 13, 2,   8,  4,   6, 15,  11,  1,  10,  9,   3, 14,   5,  0,  12,  7 },
 			{ 1, 15,  13,  8,  10,  3,   7,  4,  12,  5,   6, 11,   0, 14,   9,  2 },
 			{ 7, 11,   4,  1,   9, 12,  14,  2,   0,  6,  10, 13,  15,  3,   5,  8 },
 			{ 2,  1,  14,  7,   4, 10,   8, 13,  15, 12,   9,  0,   3,  5,   6, 11 }
 		},
 	};
 
+	string res = "";
 
-	return input48;
+	for (size_t i = 0; i < 8; i++)
+	{
+		string SInput = input48.substr(i * 6, 6);
+
+		int row = binToDec(string({ SInput[0], SInput[SInput.size() - 1] }));
+		int column = binToDec(SInput.substr(1, 4));
+
+		res += OR(decToBin(S[i][row][column]), "0000");
+		
+	}
+
+	return res;
 }
 
 string f(string input, string key) {
@@ -211,6 +260,9 @@ string f(string input, string key) {
 }
 
 int main() {
+
+
+//	system("pause");
 
 	// Initialized message and key values
 	string message = toUpper("0123456789ABCDEF");	 // In HEX. Pass through toUpper to make sure all in caps
