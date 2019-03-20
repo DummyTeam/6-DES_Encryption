@@ -1,7 +1,6 @@
 ﻿#include<iostream>
 #include<string>
 #include<cmath>
-#include <sstream>
 
 using namespace std;
 
@@ -484,28 +483,66 @@ string decrypt(string chipperBlock64, string keyBlock64) {
 	return runThroughTable(concatenatedResult, IP_Minus1, 64);
 }
 
+string hexToString(string hex) {
+	int len = hex.length();
+	std::string newString;
+	for (int i = 0; i < len; i += 2)
+	{
+		string byte = hex.substr(i, 2);
+		char chr = (char)(int)strtol(byte.c_str(), NULL, 16);
+		newString.push_back(chr);
+	}
+	return newString;
+}
+
 int main() {
-	string message = "Your lips are smoother than vaseline";
+	string message = "Incredible sentence from DummyTeam";
 	string key = "FourChar";
+
+	// TODO: Make it available for both upper and lover case
 
 	// Initialized message and key values
 	string messageHex = toUpper(formatMessage(message));	 // In HEX. Pass through toUpper to make sure all in caps
 	string keyHex = toUpper(stringToHex(message));			 // In HEX. Pass through toUpper to make sure all in caps
 
+	cout << "Message hex: \t\t" << messageHex << endl;
+	cout << "Message text: \t\t" << hexToString(messageHex) << endl;
+
 	// Converted HEX values to binary values
 	string binMessage = BCH(messageHex);
 	string binKey = BCH(keyHex);
+
+	/////////////////////////////////////////////////////////////////
 
 	string encryptedMessageBin = "";
 
 	for (int i = 0; i < binMessage.size() / 64; i++)
 	{
-		encryptedMessageBin += decrypt(binMessage.substr(i * 64, 64), binKey);
+		encryptedMessageBin += DES(binMessage.substr(i * 64, 64), binKey);
 	}
 
 	string encryptedMessageHex = binToHex(encryptedMessageBin);
 
-	cout << "Encrypted message: \t" << encryptedMessageHex << endl;
+	cout << "Encrypted HEX message: \t" << encryptedMessageHex << endl;
+
+	cout << "Encrypted message: \t" << hexToString(encryptedMessageHex) << endl << endl;
+
+	/////////////////////////////////////////////////////////////////
+
+	string decryptedMessageBin = "";
+
+	for (int i = 0; i < encryptedMessageBin.size() / 64; i++)
+	{
+		decryptedMessageBin += decrypt(encryptedMessageBin.substr(i * 64, 64), binKey);
+	}
+
+	string dencryptedMessageHex = binToHex(decryptedMessageBin);
+
+	cout << "Decrypted HEX message: \t" << dencryptedMessageHex << endl;
+
+	cout << "Decrypted message: \t" << hexToString(dencryptedMessageHex) << endl;
+
+	/////////////////////////////////////////////////////////////////
 
 	cout << endl;
 
