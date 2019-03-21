@@ -21,6 +21,9 @@ Data Encryption Standard algorithm written in C++
                                                                                                     
 The Data Encryption Standard is a symmetric-key algorithm for the encryption of electronic data.
 
+## Sample
+![Screen from program](https://raw.githubusercontent.com/DummyTeam/6-Encryption/master/art/sample.PNG)
+
 ## How DES works
 
 - Message (string text)
@@ -55,5 +58,6 @@ Encyription algorithm
 
 Decryption is simply the inverse of encryption, follwing the same steps as above, but reversing the order in which the subkeys are applied.
 
+## Tools
 - Visual Studio 2017 Community version
 - C++
