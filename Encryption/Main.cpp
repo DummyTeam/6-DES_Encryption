@@ -497,7 +497,7 @@ string hexToString(string hex) {
 
 int main() {
 	string message = "Incredible sentence from DummyTeam";
-	string key = "FourChar";
+	string key = "SuperKey";
 
 	// TODO: Make it available for both upper and lover case
 
@@ -505,6 +505,7 @@ int main() {
 	string messageHex = toUpper(formatMessage(message));	 // In HEX. Pass through toUpper to make sure all in caps
 	string keyHex = toUpper(stringToHex(message));			 // In HEX. Pass through toUpper to make sure all in caps
 
+	cout << "Encryption key: \t" << key << endl;
 	cout << "Message hex: \t\t" << messageHex << endl;
 	cout << "Message text: \t\t" << hexToString(messageHex) << endl;
 
@@ -537,6 +538,8 @@ int main() {
 	}
 
 	string dencryptedMessageHex = binToHex(decryptedMessageBin);
+
+	cout << "Decryption key: \t" << key << endl;
 
 	cout << "Decrypted HEX message: \t" << dencryptedMessageHex << endl;
 
