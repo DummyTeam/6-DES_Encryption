@@ -1,10 +1,24 @@
 # 6-Encryption
 Data Encryption Standard algorithm written in C++
-
-░█▀▀▄ ░█▀▀▀ ░█▀▀▀█ 　 ░█▀▀▀ █▀▀▄ █▀▀ █▀▀█ █──█ █▀▀█ ▀▀█▀▀ ─▀─ █▀▀█ █▀▀▄ 
-░█─░█ ░█▀▀▀ ─▀▀▀▄▄ 　 ░█▀▀▀ █──█ █── █▄▄▀ █▄▄█ █──█ ──█── ▀█▀ █──█ █──█ 
-░█▄▄▀ ░█▄▄▄ ░█▄▄▄█ 　 ░█▄▄▄ ▀──▀ ▀▀▀ ▀─▀▀ ▄▄▄█ █▀▀▀ ──▀── ▀▀▀ ▀▀▀▀ ▀──▀ 
-
+                                                                                                    
+     -hhhhhhhhhhhhhhhhh:             +hhhhhhhhhhhhhhhhhhhhhhh/          shhhhhhhhhhhhhs +hhhh.      
+     :NNNNNNNNNNNNNNNNNo--.          oNNNNNNNNNNNNNNNNNNNNNNN+       .--dNNNNNNNNNNNNNd-yNNNN-      
+     `--/NNNNh-------/NNNNy          .--sNNNNo----------+NNNN+       mNNNm-----------dNNNNNNN-      
+        .NNNNh       .yyyNmyyo          +NNNN+          .yyyy/       mNNNd           syydNNNN-      
+        .NNNNh           NNNNh          +NNNN+    `....              mNNNd              oNNNN-      
+        .NNNNh           NNNNh          +NNNN+    hmmmm`             mNNNd              .::::`      
+        .NNNNh           NNNNh          +NNNNy++++mNNNN`             hddNm+++++++++-                
+        .NNNNh           NNNNh          +NNNNNNNNNNNNNN`             ```hNNNNNNNNNNo``````          
+        .NNNNh           NNNNh          +NNNNy++++mNNNN`                :+++++++++Nmdddddd`         
+        .NNNNh           NNNNh          +NNNN+    ymmmm`                         `mmmmmmmN///`      
+        .NNNNh           NNNNh          +NNNN+    `....                           ......sNNNN-      
+        .NNNNh           NNNNh          +NNNN+                       yhhhy              oNNNN-      
+        .NNNNh       `---NNNNh          +NNNN+          `----`       mNNNm---           oNNNN-      
+        .NNNNh       -mmmNh--.          +NNNN+          -mmmm+       mNNNNmmm.          oNNNN-      
+     .yyyNNNNmyyyyyyyhNdyy+          /yydNNNNdyyyyyyyyyyhNNNN+       mNNNNydNyyyyyyyyyyydNhyy.      
+     :NNNNNNNNNNNNNNNNN/             sNNNNNNNNNNNNNNNNNNNNNNN+       mNNNm oNNNNNNNNNNNNNN`         
+     `/////////////////.             -///////////////////////.       :///: .//////////////          
+                                                                                                    
 The Data Encryption Standard is a symmetric-key algorithm for the encryption of electronic data.
 
 ## How DES works
