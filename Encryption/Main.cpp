@@ -20,30 +20,21 @@ int main() {
 	string binKey = Utils::BCH(keyHex);
 
 	/// Encryption
-
 	DES* des = new DES();
 
 	string encryptedMessageBin = des->encrypt(binMessage, binKey);
-
 	string encryptedMessageHex = Utils::binToHex(encryptedMessageBin);
 
 	cout << "Encrypted HEX message: \t" << encryptedMessageHex << endl;
-
 	cout << "Encrypted message: \t" << Utils::hexToString(encryptedMessageHex) << endl << endl;
 
 	/// Decryption
-
 	string decryptedMessageBin = des->decrypt(encryptedMessageBin, binKey);
-
 	string decryptedMessageHex = Utils::binToHex(decryptedMessageBin);
 
 	cout << "Decryption key: \t" << key << endl;
-
 	cout << "Decrypted HEX message: \t" << decryptedMessageHex << endl;
-
 	cout << "Decrypted message: \t" << Utils::hexToString(decryptedMessageHex) << endl;
-
-	cout << endl;
 
 	system("pause");
 	return 0;
